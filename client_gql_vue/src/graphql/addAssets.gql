@@ -1,0 +1,3 @@
+mutation Recipe(!title: String!, $description: String!){
+    createAsset(title: $title, description: $description)
+}

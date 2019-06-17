@@ -1,0 +1,9 @@
+query allAssets{
+    assets{
+        id
+        handle
+        fileName
+        size
+    }
+
+}
