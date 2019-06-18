@@ -130,12 +130,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-ELASTIC_INDEX = 'analysis'
-ELASTIC_DOC_TYPE = 'analysis'
 ELASTIC = [{
     'host': '192.168.1.250',
     'port': '9200'
 }]
+ELASTIC_INDEX = 'analysis'
+ELASTIC_DOC_TYPE = 'analysis'
 
 
 # Static files (CSS, JavaScript, Images)

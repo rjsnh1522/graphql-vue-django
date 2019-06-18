@@ -3,6 +3,34 @@ from .models import Track, Like
 from graphene_django import DjangoObjectType
 from users.schema import UserType
 from graphql import GraphQLError
+from django.db.models import Q
+from django.conf import settings as s
+from elasticsearch import Elasticsearch
+import json
+
+
+def elastic_connection():
+    # pk = 54
+    # es = Elasticsearch(hosts=s.ELASTIC)
+    # elastic_data = es.get_source(index=s.ELASTIC_INDEX, doc_type=s.ELASTIC_DOC_TYPE, id=pk)
+    js = {
+      's1': "Section 1",
+      's2': "Section 2",
+      's3': "Section 3",
+      's4': "Section 4"
+    }
+    return js
+
+
+class ElasticType(graphene.ObjectType):
+    # id = graphene.ID()
+    # index = graphene.String()
+    # found = graphene.String()
+    # properties = graphene.JSONString()
+    # _source =
+    key = graphene.String()
+    header = graphene.String()
+
 
 class TrackType(DjangoObjectType):
     class Meta:
@@ -15,10 +43,32 @@ class LikeType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    tracks = graphene.List(TrackType)
+    tracks = graphene.List(TrackType, search=graphene.String())
     likes = graphene.List(LikeType)
+    elastic = graphene.List(ElasticType)
 
-    def resolve_tracks(self, info):
+    def resolve_elastic(self, info):
+        sections = elastic_connection()
+        sections_as_obj_list = []
+
+        for key, value in sections.items():
+            section = ElasticType(key, value)
+            sections_as_obj_list.append(section)
+
+        return sections_as_obj_list
+
+
+    def resolve_tracks(self, info, search=None):
+
+        if search:
+            filter = (
+                    Q(title__icontains=search) |
+                    Q(description__icontains=search) |
+                    Q(url__icontains=search) |
+                    Q(posted_by__username__icontains=search)
+
+            )
+            return Track.objects.filter(filter)
         return Track.objects.all()
 
     def resolve_likes(self, info):
