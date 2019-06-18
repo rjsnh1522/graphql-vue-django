@@ -35,6 +35,35 @@ class CreateTrack(graphene.Mutation):
         return CreateTrack(track)
 
 
+class UpdateTrack(graphene.Mutation):
+    track = graphene.Field(TrackType)
+
+    class Arguments:
+        track_id = graphene.Int(required=True)
+        title = graphene.String()
+        description = graphene.String()
+        url = graphene.String()
+
+    def mutate(self, info, **kwargs):
+        track_id = kwargs.get('track_id')
+        title = kwargs.get('title')
+        url = kwargs.get('url')
+        description = kwargs.get('description')
+
+        user = info.context.user
+        track = Track.objects.get(id=track_id)
+        if track.posted_by != user:
+            raise Exception('Not permitted to update this track')
+        track.title = title
+        track.description = description
+        track.url = url
+        track.save()
+
+        return UpdateTrack(track=track)
+
+
+
 class Mutation(graphene.ObjectType):
     create_track = CreateTrack.Field()
+    update_track = UpdateTrack.Field()
 
