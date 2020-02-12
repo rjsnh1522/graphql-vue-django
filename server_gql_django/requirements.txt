@@ -2,7 +2,7 @@ aniso8601==5.1.0
 appnope==0.1.0
 backcall==0.1.0
 decorator==4.4.0
-Django==2.2.2
+Django==2.2.10
 django-cors-headers==3.0.2
 django-graphiql==0.4.4
 django-graphql-jwt==0.2.1
